@@ -1,3 +1,3 @@
 # covid-rating
 
-MERN implementation of https://github.com/minhd-vu/covid-restaurants-ratings
+MERN implementation of [covid-restaurants-ratings](https://github.com/minhd-vu/covid-restaurants-ratings)
