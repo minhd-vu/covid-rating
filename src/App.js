@@ -1,41 +1,52 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import axios from "axios";
+import Container from "react-bootstrap/Container";
 
-import Navbar from "./components/navbar.component";
-import Login from "./components/login.component";
-import Register from "./components/register.component";
-import Home from "./components/home.component";
+import Header from "./components/header";
+import Footer from "./components/footer";
+import Login from "./components/auth/login";
+import Register from "./components/auth/register";
+import Home from "./components/home";
+import Profile from "./components/profile";
 
-function App() {
-	const [isAuth, setAuth] = useState(false);
-	const [username, setUsername] = useState("");
+import { UserContext } from "./contexts/user.context";
 
-	useEffect(() => {
+export default class App extends Component {
+	static contextType = UserContext;
+
+	componentDidMount() {
 		axios.get("/api/login", { withCredentials: true })
 			.then(res => {
 				console.log(res.data);
 				if (res.status === 200) {
-					setAuth(true);
-					setUsername(res.data.username);
+					this.context.setIsAuth(true);
+					this.context.setUsername(res.data.username);
+					this.context.setPartyCode(res.data.partyCode);
+					this.context.setIsAdmin(res.data.isAdmin);
 				}
 			}).catch(err => {
 				console.log(err);
 			});
-	}, []);
+	}
 
-	return (
-		<Router>
-			<div className="container">
-				<Navbar isAuthenticated={this.state.isAuthenticated} setUser={this.setUser} />
+	render() {
+		return (
+			<Router>
+				<Header />
 				<br />
-				<Route path="/" exact render={() => <Home isAuthenticated={this.state.isAuthenticated} />} />
-				<Route path="/login" render={() => <Login setUser={this.setUser} />} />
-				<Route path="/register" component={Register} />
-			</div>
-		</Router >
-	);
+				<Container>
+					<Route path="/" exact component={Home} />
+					<Route path="/login" component={Login} />
+					<Route path="/register" component={Register} />
+					<Route path="/user/:username" render={props => <Profile {...props} />} />
+				</Container>
+				<br />
+				<br />
+				<br />
+				<Footer />
+			</Router >
+		);
+	}
 }
-
-export default App;
