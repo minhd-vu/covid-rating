@@ -10,6 +10,7 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
+import About from "./components/about";
 import Home from "./components/home";
 import Profile from "./components/profile";
 
@@ -42,6 +43,7 @@ export default class App extends Component {
 					<Route path="/" exact component={Home} />
 					<Route path="/login" component={Login} />
 					<Route path="/register" component={Register} />
+					<Route path="/about" component={About} />
 					<Route path="/user/:username" render={props => <Profile {...props} />} />
 				</Container>
 				<br />
