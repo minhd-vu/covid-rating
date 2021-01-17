@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import MapGL, { FullscreenControl, GeolocateControl, NavigationControl, ScaleControl } from "react-map-gl";
+import { useState, useRef, useCallback } from "react";
+import ReactMapGL, { FullscreenControl, GeolocateControl, NavigationControl } from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
 
 export default function Map() {
@@ -11,18 +11,36 @@ export default function Map() {
 
 	const mapRef = useRef();
 
+	const handleViewportChange = useCallback(
+		(newViewport) => setViewport(newViewport),
+		[]
+	);
+
+	const handleGeocoderViewportChange = useCallback(
+		(newViewport) => {
+			const geocoderDefaultOverrides = { transitionDuration: 1000 };
+
+			return handleViewportChange({
+				...newViewport,
+				...geocoderDefaultOverrides
+			});
+		},
+		[handleViewportChange]
+	);
+
 	return (
-		<div style={{ height: "100vh" }}>
-			<MapGL
+		<div style={{ height: "40vh" }}>
+			<ReactMapGL
 				{...viewport}
 				ref={mapRef}
 				width="100%"
 				height="100%"
-				mapStyle="mapbox://styles/mapbox/navigation-preview-day-v2"
-				onViewportChange={nextViewport => setViewport(nextViewport)}
+				mapStyle="mapbox://styles/mapbox/light-v9"
+				onViewportChange={handleViewportChange}
+				mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
 			>
-				<div style={{ position: 'absolute', right: 0 }}>
-					<FullscreenControl container={document.querySelector('body')} />
+				<div style={{ position: "absolute", right: 0 }}>
+					<FullscreenControl />
 					<NavigationControl />
 					<GeolocateControl
 						positionOptions={{ enableHighAccuracy: true }}
@@ -30,12 +48,14 @@ export default function Map() {
 					/>
 					<Geocoder
 						mapRef={mapRef}
+						trackProximity={true}
+						marker={true}
+						onViewportChange={handleGeocoderViewportChange}
 						mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-						onViewportChange={nextViewport => setViewport(nextViewport)}
 						position="top-left"
 					/>
 				</div>
-			</MapGL>
+			</ReactMapGL>
 		</div>
 	);
 }
