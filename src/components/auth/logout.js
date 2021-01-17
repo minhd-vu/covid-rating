@@ -13,10 +13,8 @@ export default function Logout() {
             .then(res => {
                 console.log(res);
                 if (res.status === 200) {
-                    user.setIsAuth(false);
                     user.setUsername("");
-                    user.setPartyCode("");
-                    user.setIsAdmin(false);
+                    user.setAuth(false);
                 }
             });
     }
