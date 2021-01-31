@@ -3,6 +3,7 @@ import ReactMapGL, { FullscreenControl, GeolocateControl, NavigationControl, Mar
 import Geocoder from "react-map-gl-geocoder";
 import Pin from "./pin";
 import Card from "react-bootstrap/Card";
+import axios from "axios";
 
 export default function Map() {
 	const [viewport, setViewport] = useState({
@@ -42,6 +43,16 @@ export default function Map() {
 				<Pin size={20} onClick={() => togglePopup(true)} />
 			</Marker>
 		);
+
+		axios.get("/api/search/" + e.result.id, { withCredentials: true })
+			.then(res => {
+				if (res.status === 200) {
+				} else if (res.status === 204) {
+				}
+			})
+			.catch(err => {
+				console.log(err);
+			});
 
 		setPopup(
 			<Popup
