@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from "react";
-import ReactMapGL, { FullscreenControl, GeolocateControl, NavigationControl, Marker } from "react-map-gl";
+import ReactMapGL, { FullscreenControl, GeolocateControl, NavigationControl, Marker, Popup } from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
 import Pin from "./pin";
+import Card from "react-bootstrap/Card";
 
 export default function Map() {
 	const [viewport, setViewport] = useState({
@@ -10,7 +11,9 @@ export default function Map() {
 		zoom: 12
 	});
 
-	const [markers, setMarkers] = useState([]);
+	const [marker, setMarker] = useState([]);
+	const [showPopup, togglePopup] = useState(true);
+	const [popup, setPopup] = useState();
 
 	const mapRef = useRef();
 
@@ -34,15 +37,34 @@ export default function Map() {
 	function onResult(e) {
 		console.log(e);
 
-		setMarkers(
+		setMarker(
 			<Marker latitude={e.result.center[1]} longitude={e.result.center[0]}>
-				<Pin size={20} />
+				<Pin size={20} onClick={() => togglePopup(true)} />
 			</Marker>
+		);
+
+		setPopup(
+			<Popup
+				latitude={e.result.center[1]}
+				longitude={e.result.center[0]}
+				closeButton={true}
+				closeOnClick={false}
+				onClose={() => togglePopup(false)}
+				anchor="bottom">
+				<small>
+					<Card.Body>
+						<Card.Title>{e.result.text}</Card.Title>
+						<Card.Subtitle className="mb-2 text-muted">{e.result.properties.address}</Card.Subtitle>
+						<Card.Text>Covid Protection Rating <Card.Link href="#">5/5</Card.Link></Card.Text>
+						<Card.Text>Covid Reviews <Card.Link href="#">14</Card.Link></Card.Text>
+					</Card.Body>
+				</small>
+			</Popup>
 		);
 	}
 
 	return (
-		<div style={{ height: "50vh" }}>
+		<div style={{ height: "80vh" }}>
 			<ReactMapGL
 				{...viewport}
 				ref={mapRef}
@@ -69,7 +91,7 @@ export default function Map() {
 						position="top-left"
 					/>
 				</div>
-				{markers}
+				{showPopup ? popup : marker}
 			</ReactMapGL>
 		</div>
 	);
