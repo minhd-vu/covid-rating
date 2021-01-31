@@ -4,6 +4,7 @@ import Geocoder from "react-map-gl-geocoder";
 import Pin from "./pin";
 import Card from "react-bootstrap/Card";
 import axios from "axios";
+import StarRatings from "react-star-ratings";
 
 export default function Map() {
 	const [viewport, setViewport] = useState({
@@ -46,32 +47,43 @@ export default function Map() {
 
 		axios.get("/api/search/" + e.result.id, { withCredentials: true })
 			.then(res => {
+				console.log(res);
 				if (res.status === 200) {
+					setPopup(
+						<Popup
+							latitude={e.result.center[1]}
+							longitude={e.result.center[0]}
+							closeButton={true}
+							closeOnClick={false}
+							onClose={() => togglePopup(false)}
+							anchor="bottom">
+							<small>
+								<Card.Body>
+									<Card.Title>{e.result.text}</Card.Title>
+									<Card.Subtitle className="mb-2 text-muted">{e.result.properties.address}</Card.Subtitle>
+									<Card.Text>
+										<div>
+											<StarRatings
+												rating={res.data}
+												starRatedColor="gold"
+												starDimension="20px"
+												starSpacing="0px"
+											/>
+										</div>
+										<div >
+											<Card.Link href="#">14 Covid Reviews</Card.Link>
+										</div>
+									</Card.Text>
+								</Card.Body>
+							</small>
+						</Popup>
+					);
 				} else if (res.status === 204) {
 				}
 			})
 			.catch(err => {
 				console.log(err);
 			});
-
-		setPopup(
-			<Popup
-				latitude={e.result.center[1]}
-				longitude={e.result.center[0]}
-				closeButton={true}
-				closeOnClick={false}
-				onClose={() => togglePopup(false)}
-				anchor="bottom">
-				<small>
-					<Card.Body>
-						<Card.Title>{e.result.text}</Card.Title>
-						<Card.Subtitle className="mb-2 text-muted">{e.result.properties.address}</Card.Subtitle>
-						<Card.Text>Covid Protection Rating <Card.Link href="#">5/5</Card.Link></Card.Text>
-						<Card.Text>Covid Reviews <Card.Link href="#">14</Card.Link></Card.Text>
-					</Card.Body>
-				</small>
-			</Popup>
-		);
 	}
 
 	return (
