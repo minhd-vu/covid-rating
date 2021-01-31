@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
-import ReactMapGL, { FullscreenControl, GeolocateControl, NavigationControl } from "react-map-gl";
+import ReactMapGL, { FullscreenControl, GeolocateControl, NavigationControl, Marker } from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
+import Pin from "./pin";
 
 export default function Map() {
 	const [viewport, setViewport] = useState({
@@ -8,6 +9,8 @@ export default function Map() {
 		longitude: -77.3074,
 		zoom: 12
 	});
+
+	const [markers, setMarkers] = useState([]);
 
 	const mapRef = useRef();
 
@@ -28,8 +31,18 @@ export default function Map() {
 		[handleViewportChange]
 	);
 
+	function onResult(e) {
+		console.log(e);
+
+		setMarkers(
+			<Marker latitude={e.result.center[1]} longitude={e.result.center[0]}>
+				<Pin size={20} />
+			</Marker>
+		);
+	}
+
 	return (
-		<div style={{ height: "40vh" }}>
+		<div style={{ height: "50vh" }}>
 			<ReactMapGL
 				{...viewport}
 				ref={mapRef}
@@ -50,11 +63,13 @@ export default function Map() {
 						mapRef={mapRef}
 						trackProximity={true}
 						marker={true}
+						onResult={onResult}
 						onViewportChange={handleGeocoderViewportChange}
 						mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
 						position="top-left"
 					/>
 				</div>
+				{markers}
 			</ReactMapGL>
 		</div>
 	);
