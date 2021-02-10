@@ -2,11 +2,12 @@
 const mongoose = require("mongoose");
 
 const PlaceSchema = new mongoose.Schema({
-    placeId: String,
+    placeId: { type: String, unique: true, required: true },
     reviews: [{
-        user: mongoose.Types.ObjectId,
-        rating: Number,
-        comment: String
+        user: { type: mongoose.Types.ObjectId, required: true },
+        rating: { type: Number, required: true },
+        comment: { type: String, required: true },
+        date: { type: Date, required: true },
     }]
 });
 
