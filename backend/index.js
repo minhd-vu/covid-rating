@@ -43,7 +43,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use("/api/login", require("./routes/login"));
 app.use("/api/register", require("./routes/register"));
 app.use("/api/logout", require("./routes/logout"));
-app.use("/api/search", require("./routes/search"));
+app.use("/api/place", require("./routes/place"));
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../build/index.html"));
